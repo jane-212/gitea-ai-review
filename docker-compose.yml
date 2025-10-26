@@ -12,6 +12,14 @@ services:
   webhook:
     build: .
     restart: always
+    environment:
+      - RUST_LOG=info
+      - GITEA_AUTHORIZATION=Bearer Eq55NZMpMGPpQkfu
+      - GITEA_BASE_URL=http://127.0.0.1:5541
+      - GITEA_TOKEN=b81982c7a6351980513120ebbbee67d5218fe710
+      - AI_BASE_URL=https://api.deepseek.com/v1
+      - AI_KEY=sk-4a5b009d17ac42a397b911b11169477b
+      - AI_MODEL=deepseek-chat
     networks:
       - gitea
 

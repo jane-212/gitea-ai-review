@@ -7,5 +7,10 @@ edition = "2024"
 anyhow = "1.0.100"
 async-openai = "0.30.1"
 axum = "0.8.6"
-reqwest = { version = "0.12.24", default-features = false, features = ["charset", "http2", "rustls-tls"] }
-tokio = { version = "1.48.0", features = ["rt-multi-thread", "macros"] }
+env_logger = "0.11.8"
+gitea-sdk = "0.6.0"
+log = "0.4.28"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+thiserror = "2.0.17"
+tokio = { version = "1.48.0", features = ["macros", "rt-multi-thread"] }
