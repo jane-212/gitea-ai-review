@@ -23,6 +23,8 @@ pub enum ApiError {
     Gitea(#[from] gitea_sdk::error::TeatimeError),
     #[error("gitea: {0}")]
     Reqwest(#[from] reqwest::Error),
+    #[error("error: {0}")]
+    Custom(String),
 }
 
 impl IntoResponse for ApiError {
@@ -38,6 +40,7 @@ impl IntoResponse for ApiError {
             ApiError::SerdeJson(_) => (20005, "invalid request"),
             ApiError::Gitea(_) => (20006, "gitea error"),
             ApiError::Reqwest(_) => (20006, "gitea error"),
+            ApiError::Custom(_) => (20007, "error"),
         };
         let response = ApiResponse::new(code, message);
 
