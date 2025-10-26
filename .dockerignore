@@ -1,5 +1,4 @@
 target/
 test/
 
-Dockerfile
 docker-compose.yml
