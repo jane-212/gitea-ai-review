@@ -61,11 +61,17 @@ async fn review(app_state: AppState, body: String) -> Result<()> {
         return Err(ApiError::NotSupport);
     };
 
+    let url = format!("repos/{owner}/{repo}/issues/{issue}/comments");
+    let json = serde_json::json!({
+        "body": "hello"
+    });
     app_state
         .gitea_client
-        .issues(owner, repo)
-        .comments()
-        .create(issue, "hello from webhook");
+        .post(url)
+        .json(&json)
+        .send()
+        .await?
+        .error_for_status()?;
 
     Ok(())
 }

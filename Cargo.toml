@@ -10,6 +10,7 @@ axum = "0.8.6"
 env_logger = "0.11.8"
 gitea-sdk = "0.6.0"
 log = "0.4.28"
+reqwest = { version = "0.12.24", default-features = false }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.145"
 thiserror = "2.0.17"

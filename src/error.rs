@@ -19,6 +19,10 @@ pub enum ApiError {
     NotSupport,
     #[error("serde json: {0}")]
     SerdeJson(#[from] serde_json::Error),
+    #[error("gitea: {0}")]
+    Gitea(#[from] gitea_sdk::error::TeatimeError),
+    #[error("gitea: {0}")]
+    Reqwest(#[from] reqwest::Error),
 }
 
 impl IntoResponse for ApiError {
@@ -32,6 +36,8 @@ impl IntoResponse for ApiError {
             ApiError::NoResponse => (20003, "ai error"),
             ApiError::NotSupport => (20004, "event not support"),
             ApiError::SerdeJson(_) => (20005, "invalid request"),
+            ApiError::Gitea(_) => (20006, "gitea error"),
+            ApiError::Reqwest(_) => (20006, "gitea error"),
         };
         let response = ApiResponse::new(code, message);
 
