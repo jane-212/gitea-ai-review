@@ -57,13 +57,56 @@ async fn review(app_state: AppState, body: String) -> Result<()> {
     let Some(repo) = request["repository"]["name"].as_str() else {
         return Err(ApiError::NotSupport);
     };
-    let Some(issue) = request["pull_request"]["number"].as_i64() else {
+    let Some(index) = request["pull_request"]["number"].as_i64() else {
         return Err(ApiError::NotSupport);
     };
 
-    let url = format!("repos/{owner}/{repo}/issues/{issue}/comments");
+    let url = format!("repos/{owner}/{repo}/pulls/{index}.diff");
+    let diff = app_state
+        .gitea_client
+        .get(url)
+        .send()
+        .await?
+        .error_for_status()?
+        .text()
+        .await?;
+
+    let review_prompt = include_str!("review.md");
+    let message = format!("{review_prompt}\n\n{diff}");
+    let review = app_state.ai_client.chat(message).await?;
+
+    let url = format!("/repos/{owner}/{repo}/issues/{index}/comments");
     let json = serde_json::json!({
-        "body": "hello"
+        "body": review,
+        "comments": [
+            {
+                "body": "comment body1",
+                "new_position": 1,
+                "old_position": 0,
+                "path": "main.py",
+            },
+            {
+                "body": "comment body2",
+                "new_position": 0,
+                "old_position": 1,
+                "path": "main.py",
+            }
+        ],
+        "commit_id": review_id,
+        "event": "PENDING"
+    });
+    app_state
+        .gitea_client
+        .post(url)
+        .json(&json)
+        .send()
+        .await?
+        .error_for_status()?;
+
+    let url = format!("repos/{owner}/{repo}/pulls/{index}/reviews/{review_id}");
+    let json = serde_json::json!({
+        "body": "review body",
+        "event": "COMMENT"        
     });
     app_state
         .gitea_client
